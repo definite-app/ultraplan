@@ -15,7 +15,7 @@ CLI tool for recording multi-modal context (audio transcription, keystrokes, cli
 
 ```bash
 # Clone the repository
-git clone https://github.com/mike-luabase/ultraplan.git
+git clone https://github.com/definite-app/ultraplan.git
 cd ultraplan
 
 # Install with uv
