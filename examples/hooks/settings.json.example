@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run python .claude/hooks/load-recording.py",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
