@@ -117,16 +117,63 @@ The JSON file contains structured data with:
 - Array of typed events (transcript, clipboard, screenshot, keystroke_sequence)
 - Statistics (word count, event counts)
 
-## Use with AI Agents
+## Claude Code Integration
 
-The output files are designed to provide context for AI coding assistants:
+ultraplan includes a skill that teaches Claude Code how to use it. Once installed, Claude will automatically suggest recording when appropriate (e.g., "I want to capture this meeting" or "let me show you my workflow").
+
+### Install as a Personal Skill
+
+Copy the skill to your Claude Code skills directory:
 
 ```bash
-# Record a coding session
+# Clone ultraplan
+git clone https://github.com/definite-app/ultraplan.git
+
+# Copy to your personal skills directory
+mkdir -p ~/.claude/skills
+cp -r ultraplan ~/.claude/skills/ultraplan
+```
+
+That's it! Claude Code automatically discovers skills in `~/.claude/skills/`. No configuration needed.
+
+### Install as a Project Skill (for teams)
+
+To share the skill with your team, add it to your project's `.claude/skills/` directory:
+
+```bash
+cd /path/to/your/project
+mkdir -p .claude/skills
+cp -r /path/to/ultraplan .claude/skills/ultraplan
+git add .claude/skills/ultraplan/
+git commit -m "Add ultraplan skill"
+```
+
+Anyone who clones the project will have access to the skill.
+
+### Slash Commands
+
+Once installed, these slash commands become available in Claude Code:
+
+- `/record` - Start a new recording session
+- `/latest` - Load the most recent recording into context
+- `/context <session_name>` - Load a specific session
+
+See `examples/commands/` for the command definitions.
+
+### Auto-load Recordings (Optional)
+
+You can configure Claude Code to automatically load the latest recording when starting a session. See `examples/hooks/` for setup instructions.
+
+### Manual Usage
+
+You can also manually reference recordings:
+
+```bash
+# Record a session
 uv run ultraplan record --device "BlackHole 2ch"
 
-# Then reference the output in Claude Code
-claude "Based on the context in ultraplan/session_*/recording.md, help me implement..."
+# Then in Claude Code, reference the output
+claude "Based on the context in ~/.ultraplan/sessions/session_*/recording.md, help me..."
 ```
 
 ## Dependencies
