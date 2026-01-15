@@ -3,7 +3,6 @@
 import platform
 import subprocess
 import sys
-import threading
 from typing import Optional
 
 from rich.console import Console
@@ -44,9 +43,8 @@ def check_accessibility_permission() -> bool:
     try:
         # This AppleScript will prompt for permission if not granted
         # We just want to check, not prompt, so we use a different approach
-        result = subprocess.run(
-            ["osascript", "-e",
-             'tell application "System Events" to return (UI elements enabled)'],
+        subprocess.run(
+            ["osascript", "-e", 'tell application "System Events" to return (UI elements enabled)'],
             capture_output=True,
             text=True,
             timeout=5,
@@ -73,6 +71,7 @@ def check_accessibility_permission() -> bool:
 
         # Give it a moment to potentially fail - increased from 0.1s
         import time
+
         time.sleep(0.3)
 
         listener.stop()
@@ -96,6 +95,7 @@ def check_screen_recording_permission() -> bool:
 
     try:
         import mss
+
         with mss.mss() as sct:
             # Try to capture a small region
             sct.grab(sct.monitors[0])
@@ -107,6 +107,7 @@ def check_screen_recording_permission() -> bool:
 # =============================================================================
 # Notifications
 # =============================================================================
+
 
 def play_sound(sound_name: str = "Ping") -> None:
     """Play a system sound on macOS.
@@ -234,13 +235,17 @@ def check_setup():
     if accessibility_ok:
         console.print("[green]✓[/green] Accessibility permissions granted")
     else:
-        console.print("[yellow]![/yellow] Accessibility permissions may be needed for keystroke logging")
+        console.print(
+            "[yellow]![/yellow] Accessibility permissions may be needed for keystroke logging"
+        )
         console.print("  Go to: System Settings > Privacy & Security > Accessibility")
         console.print("  Add your terminal app (Terminal, iTerm2, etc.)")
 
     # Show instructions if BlackHole not installed
     if not blackhole_ok:
-        console.print(Panel(get_setup_instructions(), title="Setup Instructions", border_style="blue"))
+        console.print(
+            Panel(get_setup_instructions(), title="Setup Instructions", border_style="blue")
+        )
     else:
         console.print("\n[green]Your system appears ready for audio capture![/green]")
         console.print("\nTo start recording:")

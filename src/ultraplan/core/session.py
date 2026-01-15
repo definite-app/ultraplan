@@ -3,7 +3,6 @@
 import queue
 import threading
 import time
-from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -48,6 +47,7 @@ def _sounds_like(text: str, target: str, threshold: int = 2) -> bool:
     Returns:
         True if any word in text is within threshold edits of target
     """
+
     def edit_distance(s1: str, s2: str) -> int:
         """Compute Levenshtein edit distance between two strings."""
         if len(s1) < len(s2):
@@ -142,6 +142,7 @@ class RecordingSession:
             if stop_phrase and _sounds_like(text, stop_phrase):
                 self._voice_stop_requested = True
                 from ultraplan.platform.macos import play_sound
+
                 play_sound("Purr")  # Acknowledgment sound
 
     def _on_keystroke(self, key: str, timestamp_ms: int, is_special: bool):
@@ -181,6 +182,7 @@ class RecordingSession:
 
         # Play sound notification
         from ultraplan.platform.macos import notify_screenshot_taken
+
         notify_screenshot_taken(filename)
 
         return filename
@@ -220,12 +222,14 @@ class RecordingSession:
         )
         self.event_queue.put(event)
 
-        # Track for display (reuse screenshot counter)
-        self.screenshot_count += 1
+        # Track for display
+        self.screenshots.append(filename)
         self.last_screenshot_time = time.time()
+        self.last_screenshot_trigger = "clipboard"
 
         # Notify user
         from ultraplan.platform.macos import notify_screenshot_taken
+
         notify_screenshot_taken(filename)
 
     def _consume_events(self):
@@ -275,11 +279,15 @@ class RecordingSession:
 
             # Screenshot flash (2 seconds)
             if self.screenshots and now - self.last_screenshot_time < 2.0:
-                trigger_info = f" ({self.last_screenshot_trigger})" if self.last_screenshot_trigger else ""
-                events_line = f"[bold green]📸 Screenshot: {self.screenshots[-1]}{trigger_info}[/bold green]"
+                trigger_info = (
+                    f" ({self.last_screenshot_trigger})" if self.last_screenshot_trigger else ""
+                )
+                events_line = (
+                    f"[bold green]📸 Screenshot: {self.screenshots[-1]}{trigger_info}[/bold green]"
+                )
             # Clipboard flash (2 seconds)
             elif self.clipboard_count > 0 and now - self.last_clipboard_time < 2.0:
-                events_line = f"[bold yellow]📋 Clipboard copied[/bold yellow]"
+                events_line = "[bold yellow]📋 Clipboard copied[/bold yellow]"
             # Show counts if any events
             elif self.screenshots or self.clipboard_count:
                 parts = []
@@ -314,9 +322,7 @@ class RecordingSession:
         self.running.set()
 
         # Add session start event
-        self.event_queue.put(
-            Event(type=EventType.SESSION_START, timestamp_ms=0, data={})
-        )
+        self.event_queue.put(Event(type=EventType.SESSION_START, timestamp_ms=0, data={}))
 
         # Initialize capture modules
         self.screenshot_capture = ScreenshotCapture(self.session_dir)
@@ -414,7 +420,9 @@ class RecordingSession:
         if self.keyboard_capture:
             self.keyboard_capture.stop()
             if self.keyboard_capture.total_keystrokes == 0:
-                console.print("[yellow]⚠ No keystrokes captured. Check Accessibility permissions.[/yellow]")
+                console.print(
+                    "[yellow]⚠ No keystrokes captured. Check Accessibility permissions.[/yellow]"
+                )
 
         if self.clipboard_monitor:
             self.clipboard_monitor.stop()
@@ -509,7 +517,9 @@ class RecordingSession:
 
             # Filter out voice command words (trigger and stop words)
             self.full_transcript = self._filter_voice_commands(self.full_transcript)
-            console.print(f"[dim]Full transcription complete ({len(self.full_transcript)} chars)[/dim]")
+            console.print(
+                f"[dim]Full transcription complete ({len(self.full_transcript)} chars)[/dim]"
+            )
 
         except Exception as e:
             console.print(f"[yellow]Full transcription failed: {e}[/yellow]")
@@ -540,8 +550,8 @@ class RecordingSession:
         for word in words_to_remove:
             # Match the word with optional surrounding punctuation/whitespace
             # Also match common mistranscriptions (within edit distance 2)
-            pattern = rf'\b{re.escape(word)}\b[,.\s]*'
-            filtered = re.sub(pattern, '', filtered, flags=re.IGNORECASE)
+            pattern = rf"\b{re.escape(word)}\b[,.\s]*"
+            filtered = re.sub(pattern, "", filtered, flags=re.IGNORECASE)
 
             # Also try to match fuzzy variations by checking each word
             result_words = []
@@ -551,18 +561,20 @@ class RecordingSession:
                     # Skip this word (it's a voice command)
                     continue
                 result_words.append(w)
-            filtered = ' '.join(result_words)
+            filtered = " ".join(result_words)
 
         # Clean up extra whitespace
-        filtered = re.sub(r'\s+', ' ', filtered).strip()
+        filtered = re.sub(r"\s+", " ", filtered).strip()
         return filtered
 
     def _generate_outputs(self):
         """Generate markdown and JSON output files."""
         # Markdown output
         md_generator = MarkdownOutputGenerator(
-            self.timeline, self.config, full_transcript=self.full_transcript,
-            session_dir=self.session_dir
+            self.timeline,
+            self.config,
+            full_transcript=self.full_transcript,
+            session_dir=self.session_dir,
         )
         md_path = self.session_dir / "recording.md"
         md_generator.save(md_path)

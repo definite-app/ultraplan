@@ -112,14 +112,10 @@ class JSONOutputGenerator:
             "session": {
                 "id": self.timeline.session_id,
                 "started_at": (
-                    self.timeline.started_at.isoformat()
-                    if self.timeline.started_at
-                    else None
+                    self.timeline.started_at.isoformat() if self.timeline.started_at else None
                 ),
                 "ended_at": (
-                    self.timeline.ended_at.isoformat()
-                    if self.timeline.ended_at
-                    else None
+                    self.timeline.ended_at.isoformat() if self.timeline.ended_at else None
                 ),
                 "duration_ms": self.timeline.duration_ms,
                 "config": {
@@ -132,13 +128,11 @@ class JSONOutputGenerator:
             "events": json_events,
             "statistics": {
                 "total_transcribed_words": word_count,
-                "full_transcript_words": len(self.full_transcript.split()) if self.full_transcript else 0,
-                "screenshots_count": len(
-                    [e for e in events if e.type == EventType.SCREENSHOT]
-                ),
-                "clipboard_events_count": len(
-                    [e for e in events if e.type == EventType.CLIPBOARD]
-                ),
+                "full_transcript_words": len(self.full_transcript.split())
+                if self.full_transcript
+                else 0,
+                "screenshots_count": len([e for e in events if e.type == EventType.SCREENSHOT]),
+                "clipboard_events_count": len([e for e in events if e.type == EventType.CLIPBOARD]),
                 "keystroke_sequences_count": len(keystroke_sequences),
             },
         }

@@ -53,13 +53,12 @@ class KeyboardCapture:
         """
         # Clean old keys from buffer
         self.key_buffer = [
-            (k, t) for k, t in self.key_buffer
-            if current_time - t < self.hotkey_timeout
+            (k, t) for k, t in self.key_buffer if current_time - t < self.hotkey_timeout
         ]
 
         # Check for screenshot hotkey match
         if len(self.key_buffer) >= len(self.hotkey_screenshot):
-            recent_keys = "".join(k for k, t in self.key_buffer[-len(self.hotkey_screenshot):])
+            recent_keys = "".join(k for k, t in self.key_buffer[-len(self.hotkey_screenshot) :])
             if recent_keys == self.hotkey_screenshot:
                 return "screenshot"
 
@@ -85,7 +84,9 @@ class KeyboardCapture:
             matched_hotkey = self._check_hotkey(current_time)
             if matched_hotkey and self.on_hotkey:
                 self.hotkeys_triggered += 1
-                print(f"[keyboard] Hotkey triggered: {matched_hotkey} (total: {self.hotkeys_triggered})")
+                print(
+                    f"[keyboard] Hotkey triggered: {matched_hotkey} (total: {self.hotkeys_triggered})"
+                )
                 self.on_hotkey(matched_hotkey)
                 self.key_buffer.clear()  # Clear buffer after hotkey
                 return  # Don't log the hotkey keys
@@ -113,4 +114,6 @@ class KeyboardCapture:
         if self.listener:
             self.listener.stop()
             self.listener = None
-            print(f"[keyboard] Stopped. Total keystrokes: {self.total_keystrokes}, Hotkeys triggered: {self.hotkeys_triggered}")
+            print(
+                f"[keyboard] Stopped. Total keystrokes: {self.total_keystrokes}, Hotkeys triggered: {self.hotkeys_triggered}"
+            )

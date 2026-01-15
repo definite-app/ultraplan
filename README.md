@@ -11,6 +11,17 @@ CLI tool for recording multi-modal context (audio transcription, keystrokes, cli
 - **Raw audio saving** for later reference
 - **Dual output format**: Markdown (human-readable) + JSON (machine-parseable)
 
+## Privacy Notice
+
+**ultraplan captures sensitive data** including keystrokes, clipboard contents, audio, and screenshots. This data is stored locally in `~/.ultraplan/sessions/` and is never transmitted externally.
+
+- All processing (including Whisper transcription) runs locally on your machine
+- Session data may contain passwords, personal messages, or other sensitive information
+- Review recordings before sharing them
+- Use `--no-keys` and `--no-clipboard` flags to disable sensitive capture
+
+**Only run ultraplan when you intend to record.** The keystroke and clipboard monitoring captures everything while active.
+
 ## Installation
 
 ```bash

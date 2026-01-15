@@ -3,7 +3,6 @@
 import hashlib
 import threading
 import time
-from pathlib import Path
 from typing import Callable, Optional
 
 import pyperclip
@@ -16,7 +15,6 @@ def _get_clipboard_image_data() -> Optional[bytes]:
     """
     try:
         from AppKit import NSPasteboard, NSPasteboardTypePNG, NSPasteboardTypeTIFF
-        from Foundation import NSData
 
         pasteboard = NSPasteboard.generalPasteboard()
 
@@ -27,6 +25,7 @@ def _get_clipboard_image_data() -> Optional[bytes]:
                 # Convert to PNG if needed
                 if img_type == NSPasteboardTypeTIFF:
                     from AppKit import NSBitmapImageRep
+
                     rep = NSBitmapImageRep.imageRepWithData_(data)
                     if rep:
                         png_data = rep.representationUsingType_properties_(4, None)  # 4 = PNG
@@ -36,8 +35,10 @@ def _get_clipboard_image_data() -> Optional[bytes]:
                     return bytes(data)
         return None
     except ImportError:
+        # AppKit not available (not macOS or pyobjc not installed)
         return None
     except Exception:
+        # Clipboard may be locked or contain unsupported data
         return None
 
 
@@ -106,6 +107,7 @@ class ClipboardMonitor:
             if image_data:
                 self.last_image_hash = hashlib.md5(image_data).hexdigest()
         except Exception:
+            # Clipboard access may fail; continue with empty hash
             pass
 
         self.running.set()

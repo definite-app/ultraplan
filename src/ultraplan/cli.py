@@ -62,10 +62,14 @@ def check_permissions(enable_keylogging: bool) -> tuple[bool, bool]:
         else:
             console.print("[red]DENIED[/red]")
             console.print()
-            console.print("[yellow]⚠ Accessibility permission required for keystroke logging[/yellow]")
+            console.print(
+                "[yellow]⚠ Accessibility permission required for keystroke logging[/yellow]"
+            )
             console.print()
             console.print("  To fix this:")
-            console.print("  1. Open [bold]System Settings → Privacy & Security → Accessibility[/bold]")
+            console.print(
+                "  1. Open [bold]System Settings → Privacy & Security → Accessibility[/bold]"
+            )
             console.print("  2. Click [bold]+[/bold] and add your terminal app")
             console.print("  3. Toggle it [bold]ON[/bold]")
             console.print("  4. [bold]Restart your terminal[/bold]")
@@ -146,7 +150,20 @@ def check_permissions(enable_keylogging: bool) -> tuple[bool, bool]:
     multiple=True,
     help="Add words to boost recognition (can use multiple times)",
 )
-def record(output, model, device, no_keys, no_clipboard, no_audio, list_devices, hotkey, voice, voice_stop, open, vocab):
+def record(
+    output,
+    model,
+    device,
+    no_keys,
+    no_clipboard,
+    no_audio,
+    list_devices,
+    hotkey,
+    voice,
+    voice_stop,
+    open,
+    vocab,
+):
     """Start a recording session.
 
     Press Ctrl+C to stop recording and generate output files.
@@ -195,8 +212,10 @@ def record(output, model, device, no_keys, no_clipboard, no_audio, list_devices,
     console.print(f"  Keylogging: {'enabled' if config.enable_keylogging else 'disabled'}")
     console.print(f"  Clipboard:  {'enabled' if config.enable_clipboard else 'disabled'}")
     console.print(f"  Save Audio: {'enabled' if config.save_audio else 'disabled'}")
-    console.print(f"  Screenshot: type '{config.hotkey_screenshot}' or say \"{config.voice_trigger}\"")
-    console.print(f"  Stop:       Ctrl+C or say \"{config.voice_stop}\" (fuh·nee·toh)")
+    console.print(
+        f"  Screenshot: type '{config.hotkey_screenshot}' or say \"{config.voice_trigger}\""
+    )
+    console.print(f'  Stop:       Ctrl+C or say "{config.voice_stop}" (fuh·nee·toh)')
     console.print()
 
     try:
@@ -205,7 +224,7 @@ def record(output, model, device, no_keys, no_clipboard, no_audio, list_devices,
         stop_reason = session.wait()  # Block until Ctrl+C or voice stop
 
         if stop_reason == "voice":
-            console.print(f"\n[cyan]Voice command detected: \"{voice_stop}\"[/cyan]")
+            console.print(f'\n[cyan]Voice command detected: "{voice_stop}"[/cyan]')
         console.print("[yellow]Stopping recording...[/yellow]")
     except KeyboardInterrupt:
         console.print("\n[yellow]Stopping recording...[/yellow]")
@@ -220,6 +239,7 @@ def record(output, model, device, no_keys, no_clipboard, no_audio, list_devices,
             if md_path.exists():
                 import subprocess
                 import platform
+
                 console.print(f"[dim]Opening {md_path}...[/dim]")
                 if platform.system() == "Darwin":
                     subprocess.run(["open", str(md_path)], check=False)

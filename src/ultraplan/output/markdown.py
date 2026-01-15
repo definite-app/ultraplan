@@ -94,9 +94,7 @@ class MarkdownOutputGenerator:
             lines.append(f"**Session Directory**: `{self.session_dir.resolve()}`")
 
         if self.timeline.started_at:
-            lines.append(
-                f"**Started**: {self.timeline.started_at.strftime('%Y-%m-%d %H:%M:%S')}"
-            )
+            lines.append(f"**Started**: {self.timeline.started_at.strftime('%Y-%m-%d %H:%M:%S')}")
 
         duration_s = self.timeline.duration_ms // 1000
         mins, secs = divmod(duration_s, 60)
@@ -121,7 +119,6 @@ class MarkdownOutputGenerator:
 
         # Get keystroke sequences
         keystroke_sequences = self._reconstruct_keystrokes(events)
-        seq_idx = 0
 
         for event in events:
             ts = self._format_timestamp(event.timestamp_ms)
