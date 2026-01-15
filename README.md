@@ -78,6 +78,21 @@ uv run ultraplan record -o ./my_session
 - **Ctrl+C**: Stop recording and generate output files
 - **jj** (double-j quickly): Take a screenshot
 
+### Voice Commands
+
+ultraplan listens for voice trigger words during recording:
+
+| Command | Default | Action |
+|---------|---------|--------|
+| Screenshot | "marco" | Takes a screenshot |
+| Stop | "finito" | Stops recording |
+
+The trigger words use fuzzy matching, so slight mispronunciations still work. You can customize them:
+
+```bash
+uv run ultraplan record --voice "cheese" --voice-stop "done"
+```
+
 ### Options
 
 ```bash
